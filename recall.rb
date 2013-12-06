@@ -73,6 +73,16 @@ get '/notes/json' do
   json(@notes, :encoder => :to_json, :content_type => :js)
 end
 
+get '/add/:note' do
+  n = Note.new
+  n.content = params[:note]
+  n.created_at = Time.now
+  n.updated_at = Time.now
+  n.save
+
+  redirect '/'
+end
+
 not_found do
   "Page not found"
 end
