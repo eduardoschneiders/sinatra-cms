@@ -37,12 +37,18 @@ post '/' do
   redirect '/'
 end
 
+get '/rss.xml' do
+  @notes = Note.all :order => :id.desc
+  builder :rss
+end
+
 get '/:id' do
 
   @note = Note.get params[:id]
   @title = "Editing note: #{@note.content}"
   erb :edit
 end
+
 
 put '/:id' do
   n = Note.get params[:id]
@@ -87,6 +93,7 @@ get '/add/:note' do
 
   redirect '/'
 end
+
 
 not_found do
   "Page not found"

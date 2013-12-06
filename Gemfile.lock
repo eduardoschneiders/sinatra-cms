@@ -2,6 +2,7 @@ GEM
   specs:
     addressable (2.3.5)
     bcrypt-ruby (3.1.2)
+    builder (3.1.4)
     data_objects (0.10.13)
       addressable (~> 2.1)
     datamapper (1.2.0)
@@ -62,6 +63,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  builder
   datamapper
   dm-sqlite-adapter
   sqlite3
