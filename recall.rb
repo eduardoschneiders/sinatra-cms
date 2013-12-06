@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'data_mapper'
+require 'sinatra/json'
 
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/recall.db")
 
@@ -29,6 +30,47 @@ post '/' do
   n.save
 
   redirect '/'
+end
+
+get '/:id' do
+
+  @note = Note.get params[:id]
+  @title = "Editing note: #{@note.content}"
+  erb :edit
+end
+
+put '/:id' do
+  n = Note.get params[:id]
+  n.content = params[:content]
+  n.complete = params[:complete] ? 1 : 0
+  n.updated_at = Time.now
+  n.save
+
+  redirect '/'
+end
+
+get '/:id/delete' do
+  @note = Note.get params[:id]
+  @title = "Confirm deletion of note ##{params[:id]}"
+  erb :delete
+end
+
+delete '/:id' do
+  n = Note.get params[:id]
+  n.destroy
+  redirect '/'
+end
+
+get '/:id/complete' do
+  n = Note.get params[:id]
+  n.complete = 1
+  n.save
+  redirect '/'
+end
+
+get '/notes/json' do
+  @notes = Note.all :order => :id.desc
+  json(@notes, :encoder => :to_json, :content_type => :js)
 end
 
 not_found do
