@@ -20,3 +20,17 @@ get '/' do
   @title = 'All Notes'
   erb :home
 end
+
+post '/' do
+  n = Note.new
+  n.content = params[:content]
+  n.created_at = Time.now
+  n.updated_at = Time.now
+  n.save
+
+  redirect '/'
+end
+
+not_found do
+  "Page not found"
+end
