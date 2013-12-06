@@ -14,7 +14,6 @@ xml.rss :version => "2.0" do
         xml.guid "#{url}/#{note.id}"
         xml.pubDate Time.parse(note.created_at.to_s).rfc822
         xml.description h note.content
-        xml.teste "ousydfousd"
       end
     end
   end
