@@ -110,6 +110,10 @@ post '/' do
     redirect '/', :error => 'Failed to save note.'
   end
 end
+get '/logout' do
+  session[:username] = nil
+  redirect '/login', :notice => 'Logout successfully'
+end
 
 get '/rss.xml' do
   @notes = Note.all :order => :id.desc

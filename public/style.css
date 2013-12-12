@@ -24,6 +24,12 @@ header h2 {
     color: #999;
 }
 
+header h3 {
+    font-size: 12px;
+
+    color: #999;
+}
+
 #main {
     margin: 0 0 20px;
 }
@@ -65,6 +71,10 @@ header h2 {
 #edit input[type=checkbox] {
     height: 50px;
     width: 20px;
+}
+
+.welcome{
+    float: right;
 }
 
 article {

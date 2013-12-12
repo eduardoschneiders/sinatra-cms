@@ -10,6 +10,13 @@
   %body
     %header
       %hgroup
+        %div.welcome
+          %h3
+            - if login?
+              Welcome
+              = session[:username]
+              %a{ :href => '/logout' }
+                Logout
         %h1
           %a{ :href => '/'}
             = SITE_TITLE
