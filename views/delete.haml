@@ -1,0 +1,10 @@
+- if @note
+  %p
+    Ae you sure you want to delete the following note:
+    %em
+      = h @note.content
+  %form{ :action => "/#{@note.id}", :method => 'post'}
+    %input{ :type => 'hidden', :name => '_method', :value => 'delete'}
+    %input{ :type => 'submit', :value => 'Ys, Delete It!'}
+    %a{ :href => "/#{@note.id}" }
+      Cancel
