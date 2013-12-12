@@ -1,10 +1,13 @@
 require 'rubygems'
 require 'sinatra'
+require 'dm-core'
+require 'digest/sha1'
 require 'data_mapper'
 require 'sinatra/json'
 require 'sinatra/base'
 require 'rack-flash'
 require 'sinatra/redirect_with_flash'
+require 'haml'
 
 enable :sessions
 use Rack::Flash, :sweep => true
@@ -28,15 +31,32 @@ DataMapper.finalize.auto_upgrade!
 helpers do
   include Rack::Utils
   alias_method :h, :escape_html
+
+  def login?
+    if session[:username].nil?
+      return false
+    else
+      return true
+    end
+  end
 end
 
 get '/' do
+  unless login?
+    redirect '/login', :error => 'You need to login'
+  end
+
   @notes = Note.all :order => :id.desc
   @title = 'All Notes'
   if @notes.empty?
     flash[:error] = 'No notes found. Add your first below.'
   end
   erb :home
+end
+
+get '/login' do
+  @title = 'Login'
+  haml :login, :error => 'teste'
 end
 
 post '/' do
