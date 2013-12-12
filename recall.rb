@@ -8,6 +8,7 @@ require 'sinatra/base'
 require 'rack-flash'
 require 'sinatra/redirect_with_flash'
 require 'haml'
+require 'bcrypt'
 
 enable :sessions
 use Rack::Flash, :sweep => true
@@ -24,6 +25,14 @@ class Note
   property :complete, Boolean, :required => true, :default => false
   property :created_at, DateTime
   property :updated_at, DateTime
+end
+
+class User
+  include DataMapper::Resource
+  property :id, Serial
+  property :username, Text, :required => true
+  property :password_hash, Text, :required => true
+  property :password_salt, Text, :required => true
 end
 
 DataMapper.finalize.auto_upgrade!
@@ -51,12 +60,43 @@ get '/' do
   if @notes.empty?
     flash[:error] = 'No notes found. Add your first below.'
   end
-  erb :home
+  haml :home
 end
 
 get '/login' do
   @title = 'Login'
-  haml :login, :error => 'teste'
+  haml :login
+end
+
+post '/login' do
+  u = User.first :username => params[:username]
+  # u.password_hash
+  BCrypt::Engine.hash_secret(params[:password], u.password_salt)
+  if u.password_hash == BCrypt::Engine.hash_secret(params[:password], u.password_salt)
+    session[:username] = params[:username]
+    redirect '/', :notice => 'Login successfully'
+  else
+    redirect '/login', :error => 'Wrong username or password'
+  end
+
+end
+
+get '/signup' do
+  @title = 'Sign Up'
+  haml :signup
+end
+
+post '/signup' do
+  password_salt = BCrypt::Engine.generate_salt
+  password_hash = BCrypt::Engine.hash_secret(params[:password], password_salt)
+
+  u = User.new
+  u.username = params[:username]
+  u.password_hash = password_hash
+  u.password_salt = password_salt
+  u.save
+
+  redirect '/login', :notice => 'User created successfully'
 end
 
 post '/' do

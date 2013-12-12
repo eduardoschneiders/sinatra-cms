@@ -1,0 +1,16 @@
+%form(action="/signup" method="post")
+  %div
+    %label(for="username")Username:
+    %input#username(type="text" name="username")
+  %div
+    %label(for="password")Passwrod:
+    %input#password(type="password" name="password")
+  %div
+    %label(for="checkpassword")Retype Passwrod:
+    %input#checkpassword(type="password" name="checkpaswsord")
+  %div
+    %input(type="submit" value="Signup")
+    %input(type="reset" value="Clear")
+
+  %p
+    %a{ :href => '/signup' } Signup
