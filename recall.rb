@@ -126,7 +126,7 @@ get '/:id' do
 
   if @note
     @title = "Editing note: #{@note.content}"
-    erb :edit
+    haml :edit
   else
     redirect '/', :error => "Can't find that note"
   end
