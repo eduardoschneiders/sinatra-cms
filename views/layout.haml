@@ -16,7 +16,8 @@
               Welcome
               = session[:username]
               %a{ :href => '/logout' }
-                Logout
+                Logout<br />
+
         %h1
           %a{ :href => '/'}
             = SITE_TITLE
@@ -33,8 +34,14 @@
       = yield
 
     %footer
-      %p
-        %small
+      %small
+        %div.left
           An app for
           %a{ :href => '/'}
             Recall
+        %div.right
+          %a{  :href => '/notes/json', :target => 'blank' }
+            get Json
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          %a{  :href => '/rss.xml', :target => 'blank' }
+            get Xml

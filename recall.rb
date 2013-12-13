@@ -124,7 +124,7 @@ get '/logout' do
 end
 
 get '/rss.xml' do
-  @notes = Note.all :order => :id.desc
+  @notes = @current_user.notes.all :order => :id.desc
   builder :rss
 end
 
@@ -189,7 +189,7 @@ get '/:id/complete' do
 end
 
 get '/notes/json' do
-  @notes = Note.all :order => :id.desc
+  @notes = @current_user.notes.all :order => :id.desc
   json(@notes, :encoder => :to_json, :content_type => :js)
 end
 

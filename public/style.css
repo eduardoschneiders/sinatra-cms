@@ -29,6 +29,13 @@ header h3 {
 
     color: #999;
 }
+.left{
+    float: left;
+}
+
+.right{
+    float: right
+}
 
 #main {
     margin: 0 0 20px;
