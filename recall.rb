@@ -3,7 +3,8 @@ require 'sinatra'
 require 'dm-core'
 require 'digest/sha1'
 require 'data_mapper'
-require 'sinatra/json'
+# require 'builder'
+# require 'sinatra/json'
 require 'sinatra/base'
 require 'rack-flash'
 require 'sinatra/redirect_with_flash'
@@ -25,6 +26,8 @@ class Note
   property :complete, Boolean, :required => true, :default => false
   property :created_at, DateTime
   property :updated_at, DateTime
+
+  belongs_to :user
 end
 
 class User
@@ -33,6 +36,8 @@ class User
   property :username, Text, :required => true
   property :password_hash, Text, :required => true
   property :password_salt, Text, :required => true
+
+  has n, :notes
 end
 
 DataMapper.finalize.auto_upgrade!
@@ -55,7 +60,8 @@ get '/' do
     redirect '/login', :error => 'You need to login'
   end
 
-  @notes = Note.all :order => :id.desc
+
+  @notes = @current_user.notes.all :order => :id.desc
   @title = 'All Notes'
   if @notes.empty?
     flash[:error] = 'No notes found. Add your first below.'
@@ -74,6 +80,7 @@ post '/login' do
   BCrypt::Engine.hash_secret(params[:password], u.password_salt)
   if u.password_hash == BCrypt::Engine.hash_secret(params[:password], u.password_salt)
     session[:username] = params[:username]
+    session[:userid] = u.id
     redirect '/', :notice => 'Login successfully'
   else
     redirect '/login', :error => 'Wrong username or password'
@@ -100,7 +107,8 @@ post '/signup' do
 end
 
 post '/' do
-  n = Note.new
+
+  n = @current_user.notes.new
   n.content = params[:content]
   n.created_at = Time.now
   n.updated_at = Time.now
@@ -122,7 +130,7 @@ end
 
 get '/:id' do
 
-  @note = Note.get params[:id]
+  @note = @current_user.notes.get params[:id]
 
   if @note
     @title = "Editing note: #{@note.content}"
@@ -134,7 +142,7 @@ end
 
 
 put '/:id' do
-  n = Note.get params[:id]
+  n = @current_user.notes.get params[:id]
   unless n
     redirect '/', :error => "Can't find that note"
   end
@@ -149,7 +157,7 @@ put '/:id' do
 end
 
 get '/:id/delete' do
-  @note = Note.get params[:id]
+  @note = @current_user.notes.get params[:id]
   if @note
     @title = "Confirm deletion of note ##{params[:id]}"
     haml :delete
@@ -159,7 +167,7 @@ get '/:id/delete' do
 end
 
 delete '/:id' do
-  n = Note.get params[:id]
+  n = @current_user.notes.get params[:id]
   if n.destroy
     redirect '/', :notice => 'Note deleted successfully'
   else
@@ -168,7 +176,7 @@ delete '/:id' do
 end
 
 get '/:id/complete' do
-  n = Note.get params[:id]
+  n = @current_user.notes.get params[:id]
   unless n
     redirect '/', :error => "Can't find that note"
   end
@@ -186,7 +194,7 @@ get '/notes/json' do
 end
 
 get '/add/:note' do
-  n = Note.new
+  n = @current_user.notes.new
   n.content = params[:note]
   n.created_at = Time.now
   n.updated_at = Time.now
@@ -198,4 +206,8 @@ end
 
 not_found do
   "Page not found"
+end
+
+before do
+  @current_user = User.get session[:userid]
 end
