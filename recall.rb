@@ -14,6 +14,8 @@ require 'bcrypt'
 enable :sessions
 use Rack::Flash, :sweep => true
 
+set :views, File.dirname(__FILE__) + "/views"
+
 SITE_TITLE = "Recall"
 SITE_DESCRIPTION = "'cause you're too busy to remember"
 
